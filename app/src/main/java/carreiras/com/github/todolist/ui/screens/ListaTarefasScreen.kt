@@ -19,6 +19,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -46,7 +47,7 @@ fun ListaTarefasScreen(
         aoExcluir = { viewModel.deletar(it) }
     )
 }
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ListaTarefasConteudo(
     tarefas: List<Tarefa>,
@@ -132,6 +133,7 @@ private fun ItemTarefa(
 }
 
 @Preview(showBackground = true)
+
 @Composable
 private fun ListaTarefasPreviewComItens() {
     FiaptodolistTheme {
