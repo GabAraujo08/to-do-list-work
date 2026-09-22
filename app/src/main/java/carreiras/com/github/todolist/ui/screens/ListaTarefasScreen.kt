@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FloatingActionButton
@@ -18,11 +19,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,6 +61,8 @@ private fun ListaTarefasConteudo(
     aoAlternarConclusao: (Tarefa) -> Unit,
     aoExcluir: (Tarefa) -> Unit
 ) {
+    var tarefaParaExcluir by remember { mutableStateOf<Tarefa?>(null) }
+
     Scaffold(
         topBar = { TopAppBar(title = { Text("Minhas tarefas") }) },
         floatingActionButton = {
@@ -80,12 +87,46 @@ private fun ListaTarefasConteudo(
                         tarefa = tarefa,
                         onClick = { aoClicarTarefa(tarefa.id) },
                         onAlternarConclusao = { aoAlternarConclusao(tarefa) },
-                        onExcluir = { aoExcluir(tarefa) }
+                        onExcluir = { tarefaParaExcluir = tarefa }
                     )
                 }
             }
         }
     }
+
+    tarefaParaExcluir?.let { tarefa ->
+        DialogoConfirmarExclusao(
+            tarefa = tarefa,
+            onConfirmar = {
+                aoExcluir(tarefa)
+                tarefaParaExcluir = null
+            },
+            onCancelar = { tarefaParaExcluir = null }
+        )
+    }
+}
+
+@Composable
+private fun DialogoConfirmarExclusao(
+    tarefa: Tarefa,
+    onConfirmar: () -> Unit,
+    onCancelar: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onCancelar,
+        title = { Text("Excluir tarefa") },
+        text = { Text("Tem certeza que deseja excluir \"${tarefa.titulo}\"? Essa ação não pode ser desfeita.") },
+        confirmButton = {
+            TextButton(onClick = onConfirmar) {
+                Text("Excluir")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onCancelar) {
+                Text("Cancelar")
+            }
+        }
+    )
 }
 
 @Composable
@@ -160,6 +201,18 @@ private fun ListaTarefasPreviewVazia() {
             aoClicarTarefa = {},
             aoAlternarConclusao = {},
             aoExcluir = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun DialogoConfirmarExclusaoPreview() {
+    FiaptodolistTheme {
+        DialogoConfirmarExclusao(
+            tarefa = Tarefa(id = 1, titulo = "Estudar Compose", descricao = "Revisar LazyColumn"),
+            onConfirmar = {},
+            onCancelar = {}
         )
     }
 }
