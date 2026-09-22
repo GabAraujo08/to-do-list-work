@@ -66,6 +66,15 @@ lista. O botão "Cancelar" aciona `aoVoltar` sem persistir nada. Assim como
 na tela de lista, o conteúdo visual foi extraído em um Composable privado
 para permitir Previews de cadastro e de edição.
 
+Ao tocar no ícone de lixeira de um item, a tela não exclui a tarefa na
+hora: guarda a tarefa clicada em um estado local (`tarefaParaExcluir`) e
+exibe um `AlertDialog` do Material 3 (`DialogoConfirmarExclusao`) com o
+título da tarefa selecionada. "Cancelar" apenas limpa esse estado, sem
+tocar no banco; "Excluir" chama `aoExcluir` (que aciona
+`viewModel.deletar`) e só então fecha o diálogo. Como o estado guarda a
+tarefa inteira, a exclusão sempre atinge exatamente o item que foi
+tocado, mesmo que a lista mude enquanto o diálogo está aberto.
+
 ### AppNavigation
 
 Define duas rotas com `NavHost`:
@@ -100,3 +109,5 @@ ser o conteúdo principal do app — o template de exemplo do Android Studio
 
 As evidências da execução (telas de listagem, cadastro, edição, conclusão,
 exclusão e navegação) estão na pasta [`docs/evidencias`](docs/evidencias).
+O fluxo de confirmação de exclusão está documentado separadamente em
+[`EVIDENCIAS_EXCLUSAO.md`](EVIDENCIAS_EXCLUSAO.md).
